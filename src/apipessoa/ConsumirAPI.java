@@ -16,9 +16,9 @@ public class ConsumirAPI extends javax.swing.JFrame {
         initComponents();
     }
 
-    public void Cadastrar(String name, int age) {
+    public void Create(String name, int age) {
         try {
-            String apiUrl = "http://localhost/slim-frame/public/";
+            String apiUrl = "http://restapi034.000webhostapp.com/create";
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -44,24 +44,24 @@ public class ConsumirAPI extends javax.swing.JFrame {
 
             JSONObject jsonObject = new JSONObject(response.toString());
             String message = jsonObject.getString("message");
-            txtLog.setForeground(Color.green);
-            txtLog.setText(message);
-            
             String log = jsonObject.getString("log");
+            txtLog.setForeground(Color.green);
+            txtLog.setText(message + " \n" + log );
+            
             System.out.println(log);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     
-    public void Actualizar(int id, String name, int age) {
+    public void Update(int id, String name, int age) {
         try {
-            String apiUrl = "http://localhost/slim-frame/public/";
+            String apiUrl = "http://restapi034.000webhostapp.com/update";
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("charset", "utf-8");
-            connection.setRequestMethod("PUT");
+            connection.setRequestMethod("POST");
             connection.setDoOutput(true);
 
             String putData = "id=" + id + "&name=" + name + "&age=" + age;
@@ -82,24 +82,24 @@ public class ConsumirAPI extends javax.swing.JFrame {
 
             JSONObject jsonObject = new JSONObject(response.toString());
             String message = jsonObject.getString("message");
-            txtLog.setForeground(Color.green);
-            txtLog.setText(message);
-            
             String log = jsonObject.getString("log");
+            txtLog.setForeground(Color.green);
+            txtLog.setText(message + " \n" + log );
+            
             System.out.println(log);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void Eliminar(int id) {
+    public void Delete(int id) {
         try {
-            String apiUrl = "http://localhost/slim-frame/public/";
+            String apiUrl = "http://restapi034.000webhostapp.com/delete";
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("charset", "utf-8");
-            connection.setRequestMethod("DELETE");
+            connection.setRequestMethod("POST");
             connection.setDoOutput(true);
 
             String deleteData = "id=" + id;
@@ -120,23 +120,59 @@ public class ConsumirAPI extends javax.swing.JFrame {
 
             JSONObject jsonObject = new JSONObject(response.toString());
             String message = jsonObject.getString("message");
-            txtLog.setForeground(Color.green);
-            txtLog.setText(message);
-            
             String log = jsonObject.getString("log");
+            txtLog.setForeground(Color.green);
+            txtLog.setText(message + " \n" + log );
+            
             System.out.println(log);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
+    public void GetId(int id) {
+        try {
+            String apiUrl = "http://restapi034.000webhostapp.com/get_id";
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("charset", "utf-8");
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
 
-    void LimparCampos() {
+            String deleteData = "id=" + id;
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = deleteData.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuffer response = new StringBuffer();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            JSONObject jsonObject = new JSONObject(response.toString());
+            String new_name = jsonObject.getString("nome");
+            int new_age = jsonObject.getInt("idade");
+            txtNome.setText(new_name);
+            txtIdade.setText("" + new_age);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    void CleanTextFields() {
         txtId.setText("");
         txtNome.setText("");
         txtIdade.setText("");
     }
 
-    void LimparLog() {
+    void CleanLog() {
         txtLog.setText("");
     }
 
@@ -176,6 +212,14 @@ public class ConsumirAPI extends javax.swing.JFrame {
         txtId.setToolTipText("");
         txtId.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
         txtId.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        txtId.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtIdKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtIdKeyTyped(evt);
+            }
+        });
         getContentPane().add(txtId, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 120, 252, 32));
 
         jLabel1.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
@@ -294,8 +338,8 @@ public class ConsumirAPI extends javax.swing.JFrame {
         } else {
             String name = txtNome.getText();
             int age = Integer.parseInt(txtIdade.getText());
-            Cadastrar(name, age);
-            LimparCampos();
+            Create(name, age);
+            CleanTextFields();
         }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
@@ -306,8 +350,8 @@ public class ConsumirAPI extends javax.swing.JFrame {
             int id = Integer.parseInt(txtId.getText());
             String name = txtNome.getText();
             int age = Integer.parseInt(txtIdade.getText());
-            Actualizar(id, name, age);
-            LimparCampos();
+            Update(id, name, age);
+            CleanTextFields();
         }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
@@ -316,14 +360,25 @@ public class ConsumirAPI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Erro, existe campo vazio");
         } else {
             int id = Integer.parseInt(txtId.getText());
-            Eliminar(id);
-            LimparCampos();
+            Delete(id);
+            CleanTextFields();
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        LimparLog();
+        CleanLog();
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void txtIdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtIdKeyTyped
+        
+    }//GEN-LAST:event_txtIdKeyTyped
+
+    private void txtIdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtIdKeyReleased
+        int id = Integer.parseInt(txtId.getText());
+        txtNome.setText("");
+        txtIdade.setText("");
+        GetId(id);
+    }//GEN-LAST:event_txtIdKeyReleased
 
     /**
      * @param args the command line arguments
